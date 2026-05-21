@@ -1,0 +1,17 @@
+[Unit]
+Description=iii Python Inference Worker
+After=network.target
+
+[Service]
+Type=simple
+User=vishal
+WorkingDirectory=/home/vishal/quickstart/workers/math-worker
+ExecStart=/home/vishal/quickstart/workers/math-worker/.venv/bin/python3 math_worker.py
+Restart=always
+RestartSec=5
+Environment=PATH=/home/vishal/quickstart/workers/math-worker/.venv/bin:/usr/bin:/bin:/usr/local/bin
+Environment=III_URL=ws://ENGINE_PRIVATE_IP:49134
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

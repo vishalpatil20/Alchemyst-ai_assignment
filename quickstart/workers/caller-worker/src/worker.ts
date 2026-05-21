@@ -11,7 +11,7 @@ iii.registerFunction(
     const result = await iii.trigger({
       function_id: 'math::add',
       payload,
-    });
+    }) as any;
 
     return {
       ...result,
@@ -27,7 +27,7 @@ iii.registerFunction(
     const result = await iii.trigger({
       function_id: 'math::add_two_numbers',
       payload: payload.body,
-    });
+    }) as any;
     return {
       status_code: 200,
       body: { c: result.c, running_total: result.running_total },

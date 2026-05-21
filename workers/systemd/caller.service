@@ -1,0 +1,17 @@
+[Unit]
+Description=iii TypeScript Caller Worker
+After=network.target
+
+[Service]
+Type=simple
+User=vishal
+WorkingDirectory=/home/vishal/quickstart/workers/caller-worker
+ExecStart=/usr/bin/npm run dev
+Restart=always
+RestartSec=5
+Environment=PATH=/usr/bin:/bin:/usr/local/bin
+Environment=III_URL=ws://ENGINE_PRIVATE_IP:49134
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

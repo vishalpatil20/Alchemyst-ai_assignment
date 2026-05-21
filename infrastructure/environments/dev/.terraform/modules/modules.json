@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"network","Source":"../../modules/gcp-network","Dir":"../../modules/gcp-network"},{"Key":"vm","Source":"../../modules/gcp-vm","Dir":"../../modules/gcp-vm"}]}

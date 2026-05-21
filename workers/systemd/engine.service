@@ -1,0 +1,15 @@
+[Unit]
+Description=iii Process Communication Engine
+After=network.target
+
+[Service]
+Type=simple
+User=vishal
+WorkingDirectory=/home/vishal/quickstart
+ExecStart=/usr/local/bin/iii --config /home/vishal/quickstart/config.yaml
+Restart=always
+RestartSec=5
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=multi-user.target

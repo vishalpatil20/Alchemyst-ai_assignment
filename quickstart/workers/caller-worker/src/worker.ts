@@ -5,32 +5,38 @@ const logger = new Logger();
 
 iii.registerFunction(
   'math::add_two_numbers',
-  async (payload: { a: number; b: number }) => {
-    logger.info('math::add_two_numbers called in TypeScript', payload);
+  async (payload: { idea: string; buzzwords: string[] }) => {
+    logger.info('Forwarding pitch request to Python Inference Worker...', payload);
 
     const result = await iii.trigger({
       function_id: 'math::add',
-      payload,
+      payload: {
+        idea: payload.idea || 'a generic business idea',
+        buzzwords: payload.buzzwords || []
+      },
     }) as any;
 
     return {
       ...result,
-      success:
-        "You've connected two workers and they're interoperating seamlessly, now let's add a few more workers to expand this project's functionality.",
+      interoperability_note:
+        "Success! This payload was processed by a TypeScript worker, routed over the private VPC subnet via RPC, analyzed by a Python worker, saved to a central state DB, and returned back seamlessly.",
     };
   },
 );
 
 iii.registerFunction(
   'http::add_two_numbers',
-  async (payload: { body: { a: number; b: number } }) => {
+  async (payload: { body: { idea: string; buzzwords: string[] } }) => {
+    logger.info('HTTP Gateway received dynamic pitch request', payload.body);
+    
     const result = await iii.trigger({
       function_id: 'math::add_two_numbers',
       payload: payload.body,
     }) as any;
+    
     return {
       status_code: 200,
-      body: { c: result.c, running_total: result.running_total },
+      body: result,
       headers: { 'Content-Type': 'application/json' },
     };
   },
@@ -39,7 +45,7 @@ iii.registerFunction(
 iii.registerTrigger({
   type: 'http',
   function_id: 'http::add_two_numbers',
-  config: { api_path: '/math/add-two-numbers', http_method: 'POST' },
+  config: { api_path: '/startup/pitch', http_method: 'POST' },
 });
 
-console.log('Caller worker started - listening for calls');
+console.log('TS Hype Caller worker started - listening for pitches!');

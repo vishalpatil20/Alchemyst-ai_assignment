@@ -4,7 +4,7 @@ This repository contains the complete production-ready **Infrastructure-as-Code 
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 The following diagram illustrates the network hygiene, VM provisioning, and WebSocket-RPC routing flow of the deployed architecture:
 
@@ -50,7 +50,7 @@ The following diagram illustrates the network hygiene, VM provisioning, and WebS
  └────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 🔒 Network Hygiene Details
+###  Network Hygiene Details
 - **No Public IPs on Workers**: Worker VMs have **only** private IPs. They cannot be scanned, reached, or attacked from the internet.
 - **Cloud NAT Egress**: The Private Subnet is bound to a Cloud Router & Cloud NAT Gateway, allowing worker VMs to safely fetch updates, compile packages (`npm install` / `pip install`), and resolve dependencies without exposing open ingress ports.
 - **Secure Bastion-Jump Deployment**: Deployment of code and service configuration to the private VMs is achieved dynamically using the Gateway VM as an **SSH ProxyJump Bastion Host** (using `-o ProxyJump` over your secure GCP SSH key). No credentials or direct SSH routes are exposed publicly.
@@ -59,28 +59,36 @@ The following diagram illustrates the network hygiene, VM provisioning, and WebS
 
 ## ⚡ Live Verification
 
-The JSON API gateway is successfully deployed and accepting RPC requests. You can verify the end-to-end flow with the following command:
+The JSON API gateway is successfully deployed and accepting RPC requests. You can test your satirical AI Startup pitch and get an instant VC Valuation report using this command:
 
 ### Exact Curl Request
 ```bash
-curl -X POST http://35.239.123.59:3111/math/add-two-numbers \
+curl -X POST http://35.239.123.59:3111/startup/pitch \
   -H 'Content-Type: application/json' \
-  -d '{"a": 100, "b": 200}'
+  -d '{"idea": "A simple list app", "buzzwords": ["AI", "blockchain", "agentic"]}'
 ```
 
 ### Sample Response
 ```json
 {
-  "c": 300,
-  "running_total": 3640,
-  "success": "You've connected two workers and they're interoperating seamlessly, now let's add a few more workers to expand this project's functionality."
+  "idea": "A simple list app",
+  "buzzwords_detected": [
+    "AI",
+    "blockchain",
+    "agentic"
+  ],
+  "satirical_pitch": "We are leveraging an autonomous multi-agent synergy framework and decentralized ledger security layer to systematically disrupt the traditional A simple list app landscape at infinite scale.",
+  "estimated_valuation_usd": 84375000,
+  "global_vc_capital_burned_usd": 84375000,
+  "success": "VC funding round successfully closed! The board approves of your paradigm shift.",
+  "interoperability_note": "Success! This payload was processed by a TypeScript worker, routed over the private VPC subnet via RPC, analyzed by a Python worker, saved to a central state DB, and returned back seamlessly."
 }
 ```
-*(Running the command multiple times will persistently increment the `running_total` state, stored inside the key-value state store engine on the central VM).*
+*(Running the command multiple times will persistently increment the `global_vc_capital_burned_usd` state, accumulated inside the key-value state store engine on the central VM).*
 
 ---
 
-## 🛠️ Instructions to Redeploy from Scratch
+## Instructions to Redeploy from Scratch
 
 To tear down and recreate this entire architecture on a fresh Google Cloud Account, follow these simple steps:
 
@@ -132,7 +140,7 @@ Run the printed `curl` command (substituting the newly created `engine_public_ip
 
 ---
 
-## 📝 Engineering Writeup: Production Hardening & Scale
+## Engineering Writeup: Production Hardening & Scale
 
 ### Part 1: Production Hardening Checklist
 Before taking this system into a live production environment, we would implement the following security and reliability practices:

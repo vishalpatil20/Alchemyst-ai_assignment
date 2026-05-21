@@ -1,0 +1,35 @@
+# Terraform local caching and runtime files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+
+# Node / JS dependencies and build directories
+**/node_modules/
+**/dist/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# Python virtual environments and runtime caches
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.venv/
+**/venv/
+**/ENV/
+**/env/
+**/.pytest_cache/
+
+# System / IDE specific files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.iii/
+*.db
+*.lock

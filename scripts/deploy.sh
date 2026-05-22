@@ -62,12 +62,30 @@ SSH_GATEWAY_ARGS="-i $SSH_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
 SSH_JUMP_ARGS="-i $SSH_KEY -o IdentitiesOnly=yes -o ProxyJump=vishal@$ENGINE_PUBLIC_IP -o StrictHostKeyChecking=no"
 
 # ----------------------------------------------------
+# PREPARE TAR ARCHIVE (excluding local node_modules, .venv, .next, and runtime cache files)
+# ----------------------------------------------------
+echo -e "${YELLOW}==> Packing codebase...${NC}"
+tar -czf "$TMP_DIR/quickstart.tar.gz" \
+    --exclude="node_modules" \
+    --exclude=".venv" \
+    --exclude=".next" \
+    --exclude=".git" \
+    --exclude="data" \
+    --exclude="*.db" \
+    --exclude="*.lock" \
+    quickstart/
+
+# ----------------------------------------------------
 # 1. DEPLOY ENGINE VM
 # ----------------------------------------------------
 echo -e "${YELLOW}==> Deploying to Engine VM (${ENGINE_PUBLIC_IP})...${NC}"
-# Copy codebase
-ssh $SSH_GATEWAY_ARGS vishal@$ENGINE_PUBLIC_IP "mkdir -p /home/vishal/quickstart"
-scp $SSH_GATEWAY_ARGS -r quickstart/* vishal@$ENGINE_PUBLIC_IP:/home/vishal/quickstart/
+# Transfer and extract codebase
+scp $SSH_GATEWAY_ARGS "$TMP_DIR/quickstart.tar.gz" vishal@$ENGINE_PUBLIC_IP:/tmp/quickstart.tar.gz
+ssh $SSH_GATEWAY_ARGS vishal@$ENGINE_PUBLIC_IP "
+    rm -rf /home/vishal/quickstart
+    tar -xzf /tmp/quickstart.tar.gz -C /home/vishal/
+    rm -f /tmp/quickstart.tar.gz
+"
 
 # Copy systemd unit
 scp $SSH_GATEWAY_ARGS "$TMP_DIR/engine.service" vishal@$ENGINE_PUBLIC_IP:/tmp/engine.service
@@ -85,9 +103,13 @@ ssh $SSH_GATEWAY_ARGS vishal@$ENGINE_PUBLIC_IP "
 # 2. DEPLOY TS CALLER WORKER VM
 # ----------------------------------------------------
 echo -e "${YELLOW}==> Deploying to TS Caller Worker VM (${CALLER_PRIVATE_IP})...${NC}"
-# Copy codebase
-ssh $SSH_JUMP_ARGS vishal@$CALLER_PRIVATE_IP "mkdir -p /home/vishal/quickstart"
-scp $SSH_JUMP_ARGS -r quickstart/* vishal@$CALLER_PRIVATE_IP:/home/vishal/quickstart/
+# Transfer and extract codebase
+scp $SSH_JUMP_ARGS "$TMP_DIR/quickstart.tar.gz" vishal@$CALLER_PRIVATE_IP:/tmp/quickstart.tar.gz
+ssh $SSH_JUMP_ARGS vishal@$CALLER_PRIVATE_IP "
+    rm -rf /home/vishal/quickstart
+    tar -xzf /tmp/quickstart.tar.gz -C /home/vishal/
+    rm -f /tmp/quickstart.tar.gz
+"
 
 # Copy systemd unit
 scp $SSH_JUMP_ARGS "$TMP_DIR/caller.service" vishal@$CALLER_PRIVATE_IP:/tmp/caller.service
@@ -109,9 +131,13 @@ ssh $SSH_JUMP_ARGS vishal@$CALLER_PRIVATE_IP "
 # 3. DEPLOY PYTHON INFERENCE WORKER VM
 # ----------------------------------------------------
 echo -e "${YELLOW}==> Deploying to Python Inference VM (${INFERENCE_PRIVATE_IP})...${NC}"
-# Copy codebase
-ssh $SSH_JUMP_ARGS vishal@$INFERENCE_PRIVATE_IP "mkdir -p /home/vishal/quickstart"
-scp $SSH_JUMP_ARGS -r quickstart/* vishal@$INFERENCE_PRIVATE_IP:/home/vishal/quickstart/
+# Transfer and extract codebase
+scp $SSH_JUMP_ARGS "$TMP_DIR/quickstart.tar.gz" vishal@$INFERENCE_PRIVATE_IP:/tmp/quickstart.tar.gz
+ssh $SSH_JUMP_ARGS vishal@$INFERENCE_PRIVATE_IP "
+    rm -rf /home/vishal/quickstart
+    tar -xzf /tmp/quickstart.tar.gz -C /home/vishal/
+    rm -f /tmp/quickstart.tar.gz
+"
 
 # Copy systemd unit
 scp $SSH_JUMP_ARGS "$TMP_DIR/inference.service" vishal@$INFERENCE_PRIVATE_IP:/tmp/inference.service
@@ -133,6 +159,6 @@ ssh $SSH_JUMP_ARGS vishal@$INFERENCE_PRIVATE_IP "
 
 echo -e "${GREEN}==> Deployment Complete!${NC}"
 echo -e "${YELLOW}==> Verification Curl Command:${NC}"
-echo -e "    curl -X POST http://${ENGINE_PUBLIC_IP}:3111/math/add-two-numbers \\"
+echo -e "    curl -X POST http://${ENGINE_PUBLIC_IP}:3111/startup/pitch \\"
 echo -e "      -H 'Content-Type: application/json' \\"
-echo -e "      -d '{\"a\": 100, \"b\": 200}'"
+echo -e "      -d '{\"idea\": \"A simple list app\", \"buzzwords\": [\"AI\", \"blockchain\", \"agentic\"]}'"

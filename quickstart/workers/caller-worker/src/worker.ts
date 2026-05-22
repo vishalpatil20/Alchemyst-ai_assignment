@@ -1,4 +1,5 @@
 import { registerWorker, Logger } from 'iii-sdk';
+import { PLAYGROUND_HTML } from './playground.js';
 
 const iii = registerWorker(process.env.III_URL ?? 'ws://localhost:49134');
 const logger = new Logger();
@@ -42,10 +43,29 @@ iii.registerFunction(
   },
 );
 
+iii.registerFunction(
+  'http::serve_playground',
+  async () => {
+    logger.info('HTTP Gateway serving interactive playground UI');
+    return {
+      status_code: 200,
+      body: PLAYGROUND_HTML,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    };
+  },
+);
+
 iii.registerTrigger({
   type: 'http',
   function_id: 'http::add_two_numbers',
   config: { api_path: '/startup/pitch', http_method: 'POST' },
 });
 
-console.log('TS Hype Caller worker started - listening for pitches!');
+iii.registerTrigger({
+  type: 'http',
+  function_id: 'http::serve_playground',
+  config: { api_path: '/', http_method: 'GET' },
+});
+
+console.log('TS Hype Caller worker started - listening for pitches and serving playground on GET /!');
+

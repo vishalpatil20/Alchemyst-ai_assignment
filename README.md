@@ -10,7 +10,9 @@ The platform simulates a satirical venture capital valuation engine where startu
 
 The infrastructure separates public entrypoints from backend workers. Private workers communicate inside an isolated subnet with egress limited via Cloud NAT, and receive tasks from the gateway VM via WebSocket-RPC.
 
-![System Architecture](detailed_architecture_flow.png)
+<img width="1447" height="552" alt="image" src="https://github.com/user-attachments/assets/2868ee91-5188-4897-9d7f-ff03d39748c6" />
+
+
 
 ### Network Topology & VM Node Specifications
 
@@ -35,37 +37,6 @@ The infrastructure separates public entrypoints from backend workers. Private wo
 * **Registered RPC Functions**:
   * `startup::calculate_valuation` (Calculates base + buzzword valuations, queries/updates centralized state, and compiles satirical pitches)
 
----
-
-## Detailed Data Flow & Request Lifecycle
-
-```text
-User Browser              Engine Gateway VM (Public)           TS Caller Worker VM (Private)        Python Inference VM (Private)
-     │                                │                                     │                                    │
-     │─── HTTP GET / or POST ────────▶│                                     │                                    │
-     │                                │─── Forward RPC via WebSocket ──────▶│                                    │
-     │                                │                                     │─── VM-to-VM RPC (startup::calculate_valuation) ──▶│
-     │                                │                                     │                                    │─── Get VC Burn State ──┐
-     │                                │                                     │                                    │◀── Return State ───────┘
-     │                                │                                     │                                    │─── Set VC Burn State ──┐
-     │                                │                                     │                                    │◀── Return State ───────┘
-     │                                │                                     │◀── Return Valuation & Pitch ───────│
-     │                                │◀── Return HTTP payload envelope ────│                                    │
-     │◀── Render Dashboard / JSON ────│                                     │                                    │
-```
-
-1. **HTTP Ingress**: The user issues a `GET /` request or submits a startup pitch via `POST /startup/pitch` to the `iii-engine-gateway` VM on port `3111`.
-2. **Gateway Forwarding**: The Gateway VM matches the route configuration and dispatches the payload internally across port `49134` using WebSocket-RPC.
-3. **Orchestration**: The TS Worker (`iii-caller-worker`) accepts the connection, parses inputs, and fires an internal VM-to-VM RPC request targeting `startup::calculate_valuation`.
-4. **Calculations**: The Python Worker (`iii-inference-worker`) detects the registered `startup::calculate_valuation` task, computes a base valuation of $10M, increments $5M per buzzword, and applies a `1.5x` multiplier for every match.
-5. **State Query & Update**:
-   * Python sends a `state::get` request to the central state service to retrieve the `"total_capital_burned"` variable under the `"vc_tracker"` scope.
-   * Calculates the new total by appending the current startup's valuation.
-   * Calls `state::set` to save the persistent state to the centralized DB file (`./data/state_store.db`).
-6. **Payload Construction**: Python returns the generated satirical VC pitch, dynamic valuation, and updated total burn numbers to the TS worker.
-7. **Response Decoration**: The TS worker appends interoperability metadata and returns a fully formatted response payload to the Engine Gateway, which responds back to the client browser.
-
----
 
 ## Interactive Web Playground
 

@@ -202,6 +202,3 @@ If inference workloads scale to production volumes (e.g., migration from rule-ba
 4. **Horizontal Scaling**: Bind autoscaling thresholds to Queue Depth metrics via KEDA (Kubernetes Event-driven Autoscaling) to scale GPU worker replicas to zero when idle and rapidly scale up when task counts rise.
 
 ---
-
-### Author
-**Vishal Patil**

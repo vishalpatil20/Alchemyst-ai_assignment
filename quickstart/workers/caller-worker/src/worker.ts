@@ -5,12 +5,12 @@ const iii = registerWorker(process.env.III_URL ?? 'ws://localhost:49134');
 const logger = new Logger();
 
 iii.registerFunction(
-  'math::add_two_numbers',
+  'startup::evaluate_pitch',
   async (payload: { idea: string; buzzwords: string[] }) => {
     logger.info('Forwarding pitch request to Python Inference Worker...', payload);
 
     const result = await iii.trigger({
-      function_id: 'math::add',
+      function_id: 'startup::calculate_valuation',
       payload: {
         idea: payload.idea || 'a generic business idea',
         buzzwords: payload.buzzwords || []
@@ -26,12 +26,12 @@ iii.registerFunction(
 );
 
 iii.registerFunction(
-  'http::add_two_numbers',
+  'http::evaluate_pitch',
   async (payload: { body: { idea: string; buzzwords: string[] } }) => {
     logger.info('HTTP Gateway received dynamic pitch request', payload.body);
     
     const result = await iii.trigger({
-      function_id: 'math::add_two_numbers',
+      function_id: 'startup::evaluate_pitch',
       payload: payload.body,
     }) as any;
     
@@ -57,7 +57,7 @@ iii.registerFunction(
 
 iii.registerTrigger({
   type: 'http',
-  function_id: 'http::add_two_numbers',
+  function_id: 'http::evaluate_pitch',
   config: { api_path: '/startup/pitch', http_method: 'POST' },
 });
 

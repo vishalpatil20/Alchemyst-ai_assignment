@@ -81,6 +81,6 @@ def evaluate_startup_pitch(payload: dict) -> dict:
         "success": "VC funding round successfully closed! The board approves of your paradigm shift."
     }
 
-iii.register_function("math::add", evaluate_startup_pitch)
+iii.register_function("startup::calculate_valuation", evaluate_startup_pitch)
 
 print("Satirical VC Evaluation worker started - listening for pitches!")

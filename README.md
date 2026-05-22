@@ -26,14 +26,14 @@ The infrastructure separates public entrypoints from backend workers. Private wo
 * **Egress**: Cloud NAT (for package updates and npm installations)
 * **Registered RPC Functions**:
   * `http::serve_playground` (Triggered on `GET /` to render the minimal dashboard)
-  * `http::add_two_numbers` (Triggered on `POST /startup/pitch`)
-  * `math::add_two_numbers` (Orchestrates target payloads to the Python VM)
+  * `http::evaluate_pitch` (Triggered on `POST /startup/pitch`)
+  * `startup::evaluate_pitch` (Orchestrates target payloads to the Python VM)
 
 #### 3. Python Inference Worker (`iii-inference-worker`)
 * **Network Segment**: Private Subnet (`10.0.2.0/24` — No public IP)
 * **Egress**: Cloud NAT (for pip environment initialization)
 * **Registered RPC Functions**:
-  * `math::add` (Calculates base + buzzword valuations, queries/updates centralized state, and compiles satirical pitches)
+  * `startup::calculate_valuation` (Calculates base + buzzword valuations, queries/updates centralized state, and compiles satirical pitches)
 
 ---
 
@@ -44,7 +44,7 @@ User Browser              Engine Gateway VM (Public)           TS Caller Worker 
      │                                │                                     │                                    │
      │─── HTTP GET / or POST ────────▶│                                     │                                    │
      │                                │─── Forward RPC via WebSocket ──────▶│                                    │
-     │                                │                                     │─── VM-to-VM RPC (math::add) ──────▶│
+     │                                │                                     │─── VM-to-VM RPC (startup::calculate_valuation) ──▶│
      │                                │                                     │                                    │─── Get VC Burn State ──┐
      │                                │                                     │                                    │◀── Return State ───────┘
      │                                │                                     │                                    │─── Set VC Burn State ──┐
@@ -56,8 +56,8 @@ User Browser              Engine Gateway VM (Public)           TS Caller Worker 
 
 1. **HTTP Ingress**: The user issues a `GET /` request or submits a startup pitch via `POST /startup/pitch` to the `iii-engine-gateway` VM on port `3111`.
 2. **Gateway Forwarding**: The Gateway VM matches the route configuration and dispatches the payload internally across port `49134` using WebSocket-RPC.
-3. **Orchestration**: The TS Worker (`iii-caller-worker`) accepts the connection, parses inputs, and fires an internal VM-to-VM RPC request targeting `math::add`.
-4. **Calculations**: The Python Worker (`iii-inference-worker`) detects the registered `math::add` task, computes a base valuation of $10M, increments $5M per buzzword, and applies a `1.5x` multiplier for every match.
+3. **Orchestration**: The TS Worker (`iii-caller-worker`) accepts the connection, parses inputs, and fires an internal VM-to-VM RPC request targeting `startup::calculate_valuation`.
+4. **Calculations**: The Python Worker (`iii-inference-worker`) detects the registered `startup::calculate_valuation` task, computes a base valuation of $10M, increments $5M per buzzword, and applies a `1.5x` multiplier for every match.
 5. **State Query & Update**:
    * Python sends a `state::get` request to the central state service to retrieve the `"total_capital_burned"` variable under the `"vc_tracker"` scope.
    * Calculates the new total by appending the current startup's valuation.

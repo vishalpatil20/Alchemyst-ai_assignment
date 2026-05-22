@@ -8,7 +8,6 @@ iii = register_worker(
 )
 logger = Logger()
 
-# Satirical corporate buzzwords
 BUZZWORDS = {
     "ai": "agentic AI-native core",
     "blockchain": "decentralized ledger security layer",
@@ -42,8 +41,7 @@ def evaluate_startup_pitch(payload: dict) -> dict:
     
     logger.info(f"Evaluating pitch for idea: '{idea}' with buzzwords: {buzzwords}")
     
-    # Satirical valuation calculation
-    base_valuation = 10_000_000  # Start at $10M base
+    base_valuation = 10_000_000
     multiplier = 1.0
     detected_buzzwords = []
     
@@ -51,13 +49,12 @@ def evaluate_startup_pitch(payload: dict) -> dict:
         w_lower = word.lower()
         if w_lower in BUZZWORDS:
             detected_buzzwords.append(word)
-            base_valuation += 5_000_000  # Add $5M per buzzword
-            multiplier *= 1.5           # Multiply valuation by 1.5x
+            base_valuation += 5_000_000
+            multiplier *= 1.5
             
     final_valuation = int(base_valuation * multiplier)
     pitch = generate_vc_pitch(idea, detected_buzzwords)
     
-    # Interact with persistent central State Store
     running_capital_burned = iii.trigger(
         {
             "function_id": "state::get",
@@ -65,7 +62,6 @@ def evaluate_startup_pitch(payload: dict) -> dict:
         }
     )
     
-    # Accumulate global VC capital burned
     current_total = running_capital_burned or 0
     new_total = current_total + final_valuation
     

@@ -61,9 +61,7 @@ fi
 SSH_GATEWAY_ARGS="-i $SSH_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
 SSH_JUMP_ARGS="-i $SSH_KEY -o IdentitiesOnly=yes -o ProxyJump=vishal@$ENGINE_PUBLIC_IP -o StrictHostKeyChecking=no"
 
-# ----------------------------------------------------
 # PREPARE TAR ARCHIVE (excluding local node_modules, .venv, .next, and runtime cache files)
-# ----------------------------------------------------
 echo -e "${YELLOW}==> Packing codebase...${NC}"
 tar -czf "$TMP_DIR/quickstart.tar.gz" \
     --exclude="node_modules" \
@@ -75,9 +73,7 @@ tar -czf "$TMP_DIR/quickstart.tar.gz" \
     --exclude="*.lock" \
     quickstart/
 
-# ----------------------------------------------------
 # 1. DEPLOY ENGINE VM
-# ----------------------------------------------------
 echo -e "${YELLOW}==> Deploying to Engine VM (${ENGINE_PUBLIC_IP})...${NC}"
 # Transfer and extract codebase
 scp $SSH_GATEWAY_ARGS "$TMP_DIR/quickstart.tar.gz" vishal@$ENGINE_PUBLIC_IP:/tmp/quickstart.tar.gz
@@ -99,9 +95,7 @@ ssh $SSH_GATEWAY_ARGS vishal@$ENGINE_PUBLIC_IP "
     echo 'Engine service started successfully!'
 "
 
-# ----------------------------------------------------
 # 2. DEPLOY TS CALLER WORKER VM
-# ----------------------------------------------------
 echo -e "${YELLOW}==> Deploying to TS Caller Worker VM (${CALLER_PRIVATE_IP})...${NC}"
 # Transfer and extract codebase
 scp $SSH_JUMP_ARGS "$TMP_DIR/quickstart.tar.gz" vishal@$CALLER_PRIVATE_IP:/tmp/quickstart.tar.gz
@@ -127,9 +121,7 @@ ssh $SSH_JUMP_ARGS vishal@$CALLER_PRIVATE_IP "
     echo 'Caller service started successfully!'
 "
 
-# ----------------------------------------------------
 # 3. DEPLOY PYTHON INFERENCE WORKER VM
-# ----------------------------------------------------
 echo -e "${YELLOW}==> Deploying to Python Inference VM (${INFERENCE_PRIVATE_IP})...${NC}"
 # Transfer and extract codebase
 scp $SSH_JUMP_ARGS "$TMP_DIR/quickstart.tar.gz" vishal@$INFERENCE_PRIVATE_IP:/tmp/quickstart.tar.gz

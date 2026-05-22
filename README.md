@@ -10,7 +10,7 @@ The platform simulates a satirical venture capital valuation engine where startu
 
 The infrastructure separates public entrypoints from backend workers. Private workers communicate inside an isolated subnet with egress limited via Cloud NAT, and receive tasks from the gateway VM via WebSocket-RPC.
 
-![System Architecture](architecture_diagram.png)
+![System Architecture](detailed_architecture_flow.png)
 
 ### Network Topology & VM Node Specifications
 
